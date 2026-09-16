@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GED Mathematics 500 Questions - CREATED BY TEACHER MYA THANDAR</title>
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --success: #198754;
+            --danger: #dc3545;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --border: #dee2e6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: #212529;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        header {
+            background-color: #ffffff;
+            border-bottom: 2px solid var(--border);
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: #0f172a;
+        }
+
+        header p {
+            margin: 2px 0 0 0;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .timer-box {
+            background-color: #212529;
+            color: #ffc107;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            font-family: monospace;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .score-summary {
+            background-color: #ffffff;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .question-header {
+            font-weight: bold;
+            font-size: 1.05rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 0.98rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .option-btn.selected {
+            background-color: #e7f1ff;
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .feedback-box.correct {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border: 1px solid #badbcc;
+        }
+
+        .feedback-box.incorrect {
+            background-color: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+        }
+
+        .explanation {
+            margin-top: 8px;
+            font-weight: normal;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0 50px 0;
+        }
+
+        .submit-btn {
+            padding: 15px 40px;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .submit-btn:hover {
+            background-color: #157347;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <header>
+        <div>
+            <h1>GED Mathematics 500 Questions Bank</h1>
+            <p>CREATED BY TEACHER MYA THANDAR</p>
+        </div>
+        <div class="timer-box" id="timer">120:00</div>
+    </header>
+
+    <div class="container">
+        <div id="score-summary" class="score-summary"></div>
+        <div id="quiz-container"></div>
+        <div class="controls">
+            <button id="submit-btn" class="submit-btn" onclick="submitExam()">Submit 500 Questions</button>
+        </div>
+    </div>
+
+    <script>
+        let questions = [];
+        let userAnswers = {};
+        let timeLeft = 120 * 60; // 120 minutes countdown
+
+        // Algorithmic Generator for 500 GED Math Questions across 4 core topics
+        function generate500Questions() {
+            const list = [];
+            for (let i = 1; i <= 500; i++) {
+                let q = {};
+                let mode = i % 4;
+
+                if (mode === 1) {
+                    // Equations of Lines
+                    let m = (i % 7) + 1;
+                    let b = (i % 5) - 2;
+                    let xVal = (i % 4) + 2;
+                    let correctY = m * xVal + b;
+                    let wrongY1 = correctY + 3;
+                    let wrongY2 = correctY - 2;
+                    let wrongY3 = correctY + 5;
+
+                    q = {
+                        id: i,
+                        question: `Question ${i}: Which of the following points lies on the line y = ${m}x ${b >= 0 ? '+ ' + b : '- ' + Math.abs(b)}?`,
+                        options: [
+                            `A. (${xVal}, ${correctY})`,
+                            `B. (${xVal}, ${wrongY1})`,
+                            `C. (${xVal}, ${wrongY2})`,
+                            `D. (${xVal}, ${wrongY3})`
+                        ],
+                        answer: 0,
+                        explanation: `Substitute x = ${xVal} into y = ${m}(${xVal}) ${b >= 0 ? '+' : '-'} ${Math.abs(b)} = ${correctY}. Point (${xVal}, ${correctY}) lies on the line.`
+                    };
+                } else if (mode === 2) {
+                    // Inequalities
+                    let a = (i % 3) + 2;
+                    let c = (i % 10) + 5;
+                    let target = a * 4 + c;
+
+                    q = {
+                        id: i,
+                        question: `Question ${i}: Solve the inequality: ${a}x - ${c} > ${target - c}.`,
+                        options: [
+                            `A. x > 4`,
+                            `B. x < 4`,
+                            `C. x > ${a}`,
+                            `D. x < ${c}`
+                        ],
+                        answer: 0,
+                        explanation: `Add ${c} to both sides: ${a}x > ${target}. Divide by ${a}: x > 4.`
+                    };
+                } else if (mode === 3) {
+                    // Functions
+                    let k = (i % 5) + 1;
+                    let result = k * (3 * 3) + 1;
+
+                    q = {
+                        id: i,
+                        question: `Question ${i}: Given the function f(x) = ${k}x² + 1, find the value of f(3).`,
+                        options: [
+                            `A. ${result + 2}`,
+                            `B. ${result}`,
+                            `C. ${result - 4}`,
+                            `D. ${result + 6}`
+                        ],
+                        answer: 1,
+                        explanation: `Substitute x = 3: f(3) = ${k}(3)² + 1 = ${k}(9) + 1 = ${result}.`
+                    };
+                } else {
+                    // Graphing & Slope Properties
+                    q = {
+                        id: i,
+                        question: `Question ${i}: What is the slope of a line parallel to the line passing through points (${i}, 2) and (${i + 2}, 10)?`,
+                        options: [
+                            `A. 2`,
+                            `B. 4`,
+                            `C. -4`,
+                            `D. Undefined`
+                        ],
+                        answer: 1,
+                        explanation: `Slope m = (10 - 2) / (${i + 2} - ${i}) = 8 / 2 = 4. Parallel lines have equal slopes (m = 4).`
+                    };
+                }
+                list.push(q);
+            }
+            return list;
+        }
+
+        function renderExam() {
+            questions = generate500Questions();
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            questions.forEach((q) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                let html = `<div class="question-header">Question ${q.id}</div>`;
+                html += `<div class="question-text">${q.question}</div>`;
+                html += `<div class="options-container">`;
+
+                q.options.forEach((opt, optIdx) => {
+                    html += `
+                        <button class="option-btn" id="btn-${q.id}-${optIdx}" onclick="selectOption(${q.id}, ${optIdx})">
+                            ${opt}
+                        </button>
+                    `;
+                });
+
+                html += `</div>`;
+                html += `<div id="feedback-${q.id}" class="feedback-box"></div>`;
+                card.innerHTML = html;
+                container.appendChild(card);
+            });
+
+            startTimer();
+        }
+
+        function selectOption(qId, optIdx) {
+            userAnswers[qId] = optIdx;
+            const buttons = document.querySelectorAll(`[id^="btn-${qId}-"]`);
+            buttons.forEach((btn, idx) => {
+                if (idx === optIdx) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+        }
+
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    submitExam();
+                } else {
+                    timeLeft--;
+                    let mins = Math.floor(timeLeft / 60);
+                    let secs = timeLeft % 60;
+                    timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function submitExam() {
+            let score = 0;
+
+            questions.forEach((q) => {
+                const feedbackEl = document.getElementById(`feedback-${q.id}`);
+                const userVal = userAnswers[q.id];
+
+                if (userVal === q.answer) {
+                    score++;
+                    feedbackEl.className = 'feedback-box correct';
+                    feedbackEl.innerHTML = `<strong>✓ Correct!</strong><div class="explanation">${q.explanation}</div>`;
+                } else {
+                    feedbackEl.className = 'feedback-box incorrect';
+                    feedbackEl.innerHTML = `<strong>✗ Incorrect.</strong><br><strong>Correct Answer:</strong> ${q.options[q.answer]}<div class="explanation">${q.explanation}</div>`;
+                }
+                feedbackEl.style.display = 'block';
+            });
+
+            const summaryEl = document.getElementById('score-summary');
+            summaryEl.style.display = 'block';
+            summaryEl.innerHTML = `Exam Completed!<br>Final Score: ${score} / 500 (${((score / 500) * 100).toFixed(1)}%)`;
+
+            document.getElementById('submit-btn').disabled = true;
+            document.getElementById('submit-btn').style.opacity = '0.6';
+            document.getElementById('submit-btn').style.cursor = 'not-allowed';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Anti-Copy Security Controls
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's' || e.key === 'i' || e.key === 'a')) {
+                e.preventDefault();
+            }
+        });
+
+        window.onload = renderExam;
+    </script>
+</body>
+</html>
